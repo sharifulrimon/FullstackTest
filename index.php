@@ -1,3 +1,9 @@
+
+<?php
+include('connection.php');
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,8 +20,10 @@
 
 <body>
 
+
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
+
       <a class="navbar-brand" href="index.php">Stock-Market</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
         aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,21 +56,27 @@
   </nav>
   </div>
   <div class="container">
-    <h1 class="text-center m-4">Stock Market Data</h1>
+  <?php 
+    session_start();
     
-<?php
-//Json to ShowTable data
-$dtls= file_get_contents ('stock_market_data.json ' );
-$dtlsok= json_decode($dtls);
-// $dtlsok = array_slice($dtlsokay, 0, 25);
-$page = !isset($_GET['page']) ? 1 : $_GET['page'];
-$limit = 600; 
-$offset = ($page - 1) * $limit; 
-$total_items = count($dtlsok); 
-$total_pages = ceil($total_items / $limit);
-$final = array_splice($dtlsok, $offset, $limit); 
+    if(isset($_SESSION['status']))
+    {
+        ?>
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Hey !</strong> <?= $_SESSION['status']; ?>
+              
+            </div>
+        <?php 
+        unset($_SESSION['status']);
+    }
 
 ?>
+    <h1 class="text-center my-4">Stock Market Data</h1>
+
+    
+<a class="btn btn-secondary" href="add.php">Add New data</a>
+<br>
+<br>
 
     <table class="table table-bordered display" id="example">
 
@@ -78,23 +92,36 @@ $final = array_splice($dtlsok, $offset, $limit);
        </tr>
       </thead>
 
-      <tbody>
+      
 <?php
-foreach($final as $ok )
-echo "
-  <tr>
-    <td> $ok->date</td>
-    <td> $ok->trade_code </td>
-    <td> $ok->high</td>
-    <td> $ok->low </td>
-    <td>$ok->open</td>
-    <td> $ok->close</td>
-    <td> $ok->volume </td>
-    <td><button>Edit</button></td>
-    <td><button>Delete</button></td>
-  </tr>
-  "
+$result = $con->query("SELECT * FROM stock_market_data");
+$dtlsok =$result->fetch_all(MYSQLI_ASSOC);
+$page = !isset($_GET['page']) ? 1 : $_GET['page'];
+$limit = 600; 
+$offset = ($page - 1) * $limit; 
+$total_items = count($dtlsok); 
+$total_pages = ceil($total_items / $limit);
+$final = array_splice($dtlsok, $offset, $limit); 
 ?>
+<tbody>
+
+<?php foreach($final as $ok): ?>
+
+  <tr>
+    <td> <?= $ok['date']?></td>
+    <td> <?= $ok['trade_code']?></td>
+    <td> <?= $ok['high']?></td>
+    <td> <?= $ok['low']?></td>
+    <td> <?= $ok['open']?></td>
+    <td> <?= $ok['close']?></td>
+    <td> <?= $ok['volume']?></td>
+   
+    <td>
+      <a href="edit.php?in=<?php echo $ok['id'];?> & dt=<?php echo $ok['date'];?>& cd=<?php echo $ok['trade_code'];?>& hi=<?php echo $ok['high'];?>& lw=<?php echo $ok['low'];?>& op=<?php echo $ok['open'];?>& cl=<?php echo $ok['close'];?> & vl=<?php echo $ok['volume'];?>" class="btn btn-danger">Edit</a>
+    <a href="delete.php?delete=<?php echo $ok['id'];?>" class="btn btn-danger">Delete</a></td>
+  </tr>
+ <?php endforeach; ?>
+
   </tbody>
  </table>
 

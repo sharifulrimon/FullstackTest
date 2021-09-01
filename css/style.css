@@ -1,10 +1,31 @@
 body{
     background-color: rgb(221, 233, 236);
 }
-
+fieldset{
+    width:400px;
+    margin-left: 400px;
+    text-align: center;
+    
+}
 h1{
     background-color: blue;
 }
 a{
     display: inline-block;
+}
+
+.FieldInfo{
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+input{
+    width: 200px;
+    height: 25px;
+    margin-bottom: 10px;
+
+}
+
+.d-none{
+    display: none;
 }
